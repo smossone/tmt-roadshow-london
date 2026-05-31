@@ -318,6 +318,70 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
 .profile-body ul { margin: 0.5rem 0 1rem 1.5rem; }
 .profile-body li { margin-bottom: 0.3rem; }
 
+
+/* Sector Lists */
+.sector-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.sector-tab {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--pandion-blue);
+  border-radius: 4px;
+  background: var(--white);
+  color: var(--pandion-blue);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.sector-tab:hover { background: var(--light-blue-tint); }
+.sector-tab.active { background: var(--pandion-blue); color: var(--white); }
+.sector-search {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Calibri', sans-serif;
+}
+.sector-search:focus { outline: none; border-color: var(--pandion-blue); }
+.sector-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.sector-table th {
+  background: var(--pandion-blue);
+  color: var(--white);
+  text-align: left;
+  padding: 6px 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  cursor: pointer;
+}
+.sector-table th:hover { background: #092d6a; }
+.sector-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid #eee;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sector-table tr:hover { background: var(--light-blue-tint); }
+.sector-table a { color: var(--pandion-blue); text-decoration: none; }
+.sector-table a:hover { text-decoration: underline; }
+.sector-count { font-size: 0.8rem; color: #777; margin-bottom: 0.5rem; }
+.sector-table-wrap { max-height: 500px; overflow-y: auto; border: 1px solid var(--light-grey); border-radius: 4px; }
+
 /* Footer */
 .footer {
   background: var(--pandion-blue);
@@ -1186,6 +1250,41 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
 <p><strong>Baltic fintech</strong> (Paysera) offers strong targets for debt-focused investors (Viola Credit, Ashgrove, CLP) who can provide growth capital without dilution.</p>
 </div>
 
+
+<!-- Sector Company Lists -->
+<h2 style="margin-top:2.5rem;margin-bottom:0.75rem;font-size:1.2rem">Company Universe by Sector</h2>
+<p style="font-size:0.85rem;color:#777;margin-bottom:1rem">~10,700 companies across Germany, Poland, and the Baltics filtered for investable scale (10+ employees or $100K+ revenue). Click a sector tab, search, and sort by any column.</p>
+
+<div class="sector-tabs" id="sectorTabs">
+  <button class="sector-tab active" onclick="switchSector('Shortlist')">Shortlist (Top Picks)</button>
+  <button class="sector-tab" onclick="switchSector('SaaS')">SaaS</button>
+  <button class="sector-tab" onclick="switchSector('IT Services')">IT Services</button>
+  <button class="sector-tab" onclick="switchSector('FinTech')">FinTech</button>
+  <button class="sector-tab" onclick="switchSector('BPO')">BPO</button>
+  <button class="sector-tab" onclick="switchSector('Industrial')">Industrial</button>
+  <button class="sector-tab" onclick="switchSector('Healthcare')">Healthcare</button>
+</div>
+
+<input type="text" class="sector-search" id="sectorSearch" placeholder="Search by company name, city, or country..." oninput="filterSectorTable()">
+<div class="sector-count" id="sectorCount"></div>
+
+<div class="sector-table-wrap">
+<table class="sector-table" id="sectorTable">
+  <thead>
+    <tr>
+      <th onclick="sortSector('n')">Company</th>
+      <th onclick="sortSector('co')">Country</th>
+      <th onclick="sortSector('ci')">City</th>
+      <th onclick="sortSector('e')">Employees</th>
+      <th onclick="sortSector('r')">Revenue ($M)</th>
+      <th>Links</th>
+    </tr>
+  </thead>
+  <tbody id="sectorBody"></tbody>
+</table>
+</div>
+<p style="font-size:0.75rem;color:#999;margin-top:0.5rem">Hover over a row for the company description. Click column headers to sort.</p>
+
 </section>
 
 </main>
@@ -1557,6 +1656,95 @@ function closeProfile() {
     el.innerHTML = fmt(start) + '<br><span style="font-size:0.75rem;font-weight:400;color:#777">\u2013 ' + fmt(end) + '</span>';
   });
 })();
+
+
+// Sector company lists
+let sectorData = {};
+let currentSector = 'Shortlist';
+let sectorSortKey = 'r';
+let sectorSortAsc = false;
+let sectorLoaded = false;
+
+function loadSectorData() {
+  if (sectorLoaded) return;
+  sectorLoaded = true;
+  fetch('sectors.json')
+    .then(r => r.json())
+    .then(data => {
+      sectorData = data;
+      renderSectorTable();
+    })
+    .catch(e => {
+      document.getElementById('sectorCount').textContent = 'Failed to load sector data.';
+    });
+}
+
+function switchSector(s) {
+  currentSector = s;
+  document.querySelectorAll('.sector-tab').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('sectorSearch').value = '';
+  sectorSortKey = 'r';
+  sectorSortAsc = false;
+  renderSectorTable();
+}
+
+function sortSector(key) {
+  if (sectorSortKey === key) sectorSortAsc = !sectorSortAsc;
+  else { sectorSortKey = key; sectorSortAsc = key === 'n' || key === 'co' || key === 'ci'; }
+  renderSectorTable();
+}
+
+function filterSectorTable() { renderSectorTable(); }
+
+function renderSectorTable() {
+  const list = sectorData[currentSector] || [];
+  const q = (document.getElementById('sectorSearch').value || '').toLowerCase();
+  let filtered = list;
+  if (q) {
+    filtered = list.filter(c =>
+      (c.n || '').toLowerCase().includes(q) ||
+      (c.co || '').toLowerCase().includes(q) ||
+      (c.ci || '').toLowerCase().includes(q) ||
+      (c.d || '').toLowerCase().includes(q)
+    );
+  }
+  // Sort
+  filtered.sort((a, b) => {
+    let va = a[sectorSortKey], vb = b[sectorSortKey];
+    if (va == null) va = sectorSortAsc ? Infinity : -Infinity;
+    if (vb == null) vb = sectorSortAsc ? Infinity : -Infinity;
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = (vb || '').toLowerCase(); }
+    if (va < vb) return sectorSortAsc ? -1 : 1;
+    if (va > vb) return sectorSortAsc ? 1 : -1;
+    return 0;
+  });
+  // Limit to 500 for performance
+  const show = filtered.slice(0, 500);
+  document.getElementById('sectorCount').textContent =
+    filtered.length + ' companies' + (filtered.length > 500 ? ' (showing first 500)' : '') + ' in ' + currentSector;
+  const tbody = document.getElementById('sectorBody');
+  tbody.innerHTML = show.map(c => {
+    const links = [];
+    if (c.w) links.push('<a href="' + (c.w.startsWith('http') ? c.w : 'http://' + c.w) + '" target="_blank">Web</a>');
+    if (c.l) links.push('<a href="' + c.l + '" target="_blank">LI</a>');
+    return '<tr title="' + (c.d || '').replace(/"/g, '&quot;') + '">' +
+      '<td style="font-weight:600">' + (c.n || '') + '</td>' +
+      '<td>' + (c.co || '') + '</td>' +
+      '<td>' + (c.ci || '') + '</td>' +
+      '<td style="text-align:right">' + (c.e ? c.e.toLocaleString() : '—') + '</td>' +
+      '<td style="text-align:right">' + (c.r ? '$' + c.r.toLocaleString() + 'M' : '—') + '</td>' +
+      '<td>' + links.join(' · ') + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+// Lazy-load sector data when Targets tab is shown
+const origShowSection = showSection;
+showSection = function(id) {
+  origShowSection.call(this, id);
+  if (id === 'targets' && !sectorLoaded) loadSectorData();
+};
 
 // Close modals on Escape
 document.addEventListener('keydown', (e) => {
