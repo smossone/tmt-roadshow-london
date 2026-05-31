@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMT Roadshow London 2026 – Pandion Partners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --pandion-blue: #0B367F;
+  --pandion-red: #D10007;
+  --light-blue-tint: #E8EDF5;
+  --medium-blue-tint: #C3D0E6;
+  --dark-grey: #4A4A4A;
+  --light-grey: #CCCCCC;
+  --white: #FFFFFF;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Calibri', 'Segoe UI', sans-serif;
+  color: var(--dark-grey);
+  background: var(--white);
+  line-height: 1.6;
+}
+h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
+
+/* Header */
+.header {
+  background: var(--pandion-blue);
+  color: var(--white);
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(11,54,127,0.3);
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.header-brand h1 {
+  color: var(--white);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.header-brand .subtitle {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  font-family: 'Inter', sans-serif;
+}
+.header-event {
+  text-align: right;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+.header-event strong { color: var(--white); font-family: 'Inter', sans-serif; }
+
+/* Navigation */
+.nav {
+  display: flex;
+  gap: 0;
+  background: var(--light-blue-tint);
+  border-bottom: 1px solid var(--medium-blue-tint);
+}
+.nav-btn {
+  flex: 1;
+  padding: 1rem 2rem;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--pandion-blue);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
+}
+.nav-btn:hover { background: var(--medium-blue-tint); }
+.nav-btn.active {
+  background: var(--white);
+  border-bottom: 3px solid var(--pandion-red);
+}
+
+/* Main Content */
+.content { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* Company Cards */
+.company-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+.company-card {
+  border: 1px solid var(--light-grey);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.15s;
+  background: var(--white);
+}
+.company-card:hover {
+  box-shadow: 0 4px 16px rgba(11,54,127,0.15);
+  transform: translateY(-2px);
+}
+.card-header {
+  background: var(--pandion-blue);
+  color: var(--white);
+  padding: 1rem 1.25rem;
+}
+.card-header h3 { color: var(--white); font-size: 1.05rem; margin-bottom: 0.2rem; }
+.card-header .card-type {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.card-body { padding: 1.25rem; }
+.card-body p { font-size: 0.9rem; margin-bottom: 1rem; color: var(--dark-grey); }
+.card-meta { font-size: 0.8rem; color: #777; margin-bottom: 0.5rem; }
+.card-meta span { margin-right: 1rem; }
+.card-links { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.card-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.link-website { background: var(--light-blue-tint); color: var(--pandion-blue); }
+.link-website:hover { background: var(--medium-blue-tint); }
+.link-linkedin { background: #E8F4FD; color: #0A66C2; }
+.link-linkedin:hover { background: #CCE5F6; }
+.link-profile { background: #FFF0F0; color: var(--pandion-red); }
+.link-profile:hover { background: #FFE0E0; }
+
+/* Calendar */
+.day-block { margin-bottom: 2.5rem; }
+.day-header {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--pandion-blue);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--pandion-blue);
+  margin-bottom: 1.25rem;
+}
+.meeting-card {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 8px;
+  border-left: 4px solid var(--pandion-blue);
+  transition: box-shadow 0.2s;
+}
+.meeting-card:hover { box-shadow: 0 2px 12px rgba(11,54,127,0.1); }
+.meeting-time {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--pandion-blue);
+  padding-top: 0.1rem;
+}
+.meeting-details h4 { font-size: 1rem; margin-bottom: 0.3rem; }
+.meeting-details .location {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.4rem;
+}
+.meeting-details .attendees {
+  font-size: 0.8rem;
+  color: #777;
+  margin-bottom: 0.5rem;
+}
+.meeting-details .directions {
+  font-size: 0.8rem;
+  background: var(--light-blue-tint);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+.btn-map {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--pandion-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-map:hover { background: #092d6a; }
+
+/* Map Modal */
+.map-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+.map-overlay.active { display: flex; }
+.map-container {
+  background: var(--white);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: var(--pandion-blue);
+  color: var(--white);
+}
+.map-header h4 { color: var(--white); font-size: 0.95rem; }
+.map-close {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+#map { height: 400px; width: 100%; }
+.map-directions {
+  padding: 1rem 1.25rem;
+  font-size: 0.85rem;
+  background: var(--light-blue-tint);
+}
+
+/* Company Profile Modal */
+.profile-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 2000;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5vh;
+  overflow-y: auto;
+}
+.profile-overlay.active { display: flex; }
+.profile-container {
+  background: var(--white);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  margin-bottom: 2rem;
+}
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: var(--pandion-blue);
+  color: var(--white);
+  position: sticky;
+  top: 0;
+}
+.profile-header h3 { color: var(--white); font-size: 1.1rem; }
+.profile-close {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.profile-body {
+  padding: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.profile-body h4 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+.profile-body p { margin-bottom: 0.75rem; }
+.profile-body ul { margin: 0.5rem 0 1rem 1.5rem; }
+.profile-body li { margin-bottom: 0.3rem; }
+
+/* Footer */
+.footer {
+  background: var(--pandion-blue);
+  color: var(--white);
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.8rem;
+  opacity: 0.9;
+  margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+  .header { flex-direction: column; gap: 0.5rem; text-align: center; }
+  .header-event { text-align: center; }
+  .company-grid { grid-template-columns: 1fr; }
+  .meeting-card { grid-template-columns: 80px 1fr; gap: 0.75rem; }
+  .content { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-brand">
+    <div>
+      <h1>PandionPartners</h1>
+      <div class="subtitle">International Mergers &amp; Acquisitions</div>
+    </div>
+  </div>
+  <div class="header-event">
+    <strong>TMT Roadshow London 2026</strong><br>
+    03.06.2026 – 05.06.2026
+  </div>
+</header>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('firms')">Investment Firms</button>
+  <button class="nav-btn" onclick="showSection('calendar')">Calendar</button>
+</nav>
+
+<main class="content">
+
+<!-- INVESTMENT FIRMS SECTION -->
+<section id="firms" class="section active">
+<div class="company-grid">
+
+<!-- MML Capital Partners -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>MML Capital Partners</h3>
+    <span class="card-type">Private Equity – Mid-Market</span>
+  </div>
+  <div class="card-body">
+    <p>International PE firm employing a partnership-based investment strategy, often acting as minority shareholder. Focuses on B2B companies with £2m–£10m+ EBITDA across UK, US, and Europe.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 90 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://mmlcapital.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/mml-capital-partners" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('mml')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- TMT Investments PLC -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>TMT Investments PLC</h3>
+    <span class="card-type">Venture Capital – AIM-listed</span>
+  </div>
+  <div class="card-body">
+    <p>AIM-listed investment company (LON:TMT) investing globally in early-stage, high-growth tech companies. Target: SaaS, e-commerce, fintech, healthtech with min. $250K per deal.</p>
+    <div class="card-meta">
+      <span>📍 Jersey</span>
+      <span>👥 21 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://tmtinvestments.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/tmt-investments-plc" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('tmt')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Columbia Lake Partners -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Columbia Lake Partners</h3>
+    <span class="card-type">Venture Debt</span>
+  </div>
+  <div class="card-body">
+    <p>London-based venture debt firm providing €2–20m growth loans to European tech companies. Light-touch approach with no board seats and light covenants. ~$300m financing capacity.</p>
+    <div class="card-meta">
+      <span>📍 City of London</span>
+      <span>👥 19 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://clpgrowth.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/columbia-lake-partners" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('clp')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- One Peak Partners -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>One Peak Partners</h3>
+    <span class="card-type">Growth Equity – B2B Software</span>
+  </div>
+  <div class="card-body">
+    <p>London-based growth equity firm with $4B+ AUM. Backs high-growth, category-defining B2B software scale-ups with $20–100m cheques. "Founder-first" approach with proprietary PULSE platform.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 47 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://onepeak.tech" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/one-peak" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('onepeak')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Felix Capital -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Felix Capital</h3>
+    <span class="card-type">Venture Capital – Creative Class</span>
+  </div>
+  <div class="card-body">
+    <p>"VC for the Creative Class." Invests $1–20m early-stage and up to $50m growth-stage at the intersection of technology and creativity. $1.2B+ AUM across four funds.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 58 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://felixcap.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/felix-capital" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('felix')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Atomico -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Atomico</h3>
+    <span class="card-type">Venture Capital – European Tech</span>
+  </div>
+  <div class="card-body">
+    <p>Founded 2006 by Skype co-founder Niklas Zennström. Invests $10–50m from Series A to pre-IPO in European-founded tech. Fund VII raised $1.24B. Portfolio: Klarna, Stripe, DeepL.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 132 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://atomico.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/atomico" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('atomico')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Battery Ventures -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Battery Ventures</h3>
+    <span class="card-type">VC / PE – All Stages</span>
+  </div>
+  <div class="card-body">
+    <p>Global tech-focused firm (est. 1983). Invests at all stages from early to buyout. Fund XV: $3.25B. $16B+ raised since inception. 450+ companies invested. 6 offices worldwide.</p>
+    <div class="card-meta">
+      <span>📍 Boston / London</span>
+      <span>👥 229 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://battery.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/battery-ventures" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('battery')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- StepStone Group -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>StepStone Group</h3>
+    <span class="card-type">Private Markets – Multi-Asset</span>
+  </div>
+  <div class="card-body">
+    <p>Global private markets firm. $179B AUM. Multi-asset class: PE, private debt, real estate, infrastructure, VC. Strategies: primaries, secondaries, co-investments, direct investments.</p>
+    <div class="card-meta">
+      <span>📍 New York, US</span>
+      <span>👥 1,393 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://stepstonegroup.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/stepstone-group" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('stepstone')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- EMK Capital -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>EMK Capital</h3>
+    <span class="card-type">Private Equity – Buy-and-Build</span>
+  </div>
+  <div class="card-body">
+    <p>Global mid-market PE firm with €7B+ AUM. "EMK Way": deep sub-sector research, operational transformation. Average 5x EBITDA growth across 25 exits. Fund III: €3.0B.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 102 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://emkcapital.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/emkcapital" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('emk')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Farview Equity Partners -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Farview Equity Partners</h3>
+    <span class="card-type">Private Equity – Enterprise Tech</span>
+  </div>
+  <div class="card-body">
+    <p>Thesis-led investor in European growth-stage enterprise technology. €15–50m equity per investment. Focus: SaaS, business/information services, fintech. Portfolio includes Exclaimer, Unily.</p>
+    <div class="card-meta">
+      <span>📍 City of London</span>
+      <span>👥 15 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://farviewequity.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/farview" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('farview')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Ventiga Capital -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Ventiga Capital</h3>
+    <span class="card-type">Private Equity – B2B Software/Data</span>
+  </div>
+  <div class="card-body">
+    <p>Profitable B2B services companies in software, data, and analytics. €20–60m per investment, €200m+ in funds. Control/joint-control positions. Focus: Nordics, UK &amp; Ireland, DACH.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 5 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://ventigacapital.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/ventiga-capital-partners-llp" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('ventiga')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- PX3 Partners -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>PX3 Partners</h3>
+    <span class="card-type">Private Equity – Pan-European</span>
+  </div>
+  <div class="card-body">
+    <p>Pan-European PE firm with €1.1B AUM (inaugural fundraise). Thematic: "Re-invent living, Net citizenship, Planet first." Focus: Business Services, Consumer &amp; Leisure, Industrials.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 15 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://px3partners.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/px3partners" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('px3')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Corten Capital -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Corten Capital</h3>
+    <span class="card-type">Private Equity – B2B Software</span>
+  </div>
+  <div class="card-body">
+    <p>Founded 2019. B2B software, tech-enabled services, information services. High-conviction, concentrated portfolio. "Investor-operator" model across Europe and North America.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 28 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://cortencapital.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/corten-capital" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('corten')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Ashgrove Capital -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Ashgrove Capital</h3>
+    <span class="card-type">Credit – B2B Software</span>
+  </div>
+  <div class="card-body">
+    <p>Independent pan-European credit manager. Senior secured, non-dilutive credit to mid-market B2B software and services companies. Fund II closed at €650m hard cap (Nov 2024). €10–50m deals.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 30 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://ashgrovecap.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/ashgrove-capital-llp" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('ashgrove')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Copilot Capital -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Copilot Capital</h3>
+    <span class="card-type">Growth Equity – European SaaS</span>
+  </div>
+  <div class="card-body">
+    <p>Founded 2023. European B2B software growth equity. Targets €5–15m ARR companies scaling to €50m+. $200m from The Friedkin Group. "Human-centred" approach with focus on sales acceleration and M&amp;A.</p>
+    <div class="card-meta">
+      <span>📍 City of London</span>
+      <span>👥 11 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://copilotcptl.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/copilotcptl" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('copilot')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Bregal Investments -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Bregal Investments</h3>
+    <span class="card-type">Private Equity – Multi-Strategy</span>
+  </div>
+  <div class="card-body">
+    <p>International PE firm with €19B+ AUM. Platform of five strategies: Sagemount (US growth), BU (DACH), Milestone (European software), Sphere (climate), Partners (consumer). 70+ portfolio companies.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+      <span>👥 343 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://bregal.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/bregal-investments" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('bregal')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Viola Credit -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Viola Credit</h3>
+    <span class="card-type">Alternative Credit – Tech</span>
+  </div>
+  <div class="card-body">
+    <p>Global alternative credit manager, part of Viola Group. $4B+ AUM. Growth Lending ($5–50m) and Asset-Backed Lending ($10–300m) for sponsor-backed tech companies. ABL Fund III: $2B.</p>
+    <div class="card-meta">
+      <span>📍 Israel / London</span>
+      <span>👥 67 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://violacredit.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/viola-credit" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('viola')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Verlinvest -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Verlinvest</h3>
+    <span class="card-type">Evergreen – Consumer Brands</span>
+  </div>
+  <div class="card-body">
+    <p>Family-backed evergreen investment firm (est. 1995). €20–200m per transaction. Backs purpose-driven entrepreneurs building global consumer brands in F&amp;B, health, consumer tech, lifestyle.</p>
+    <div class="card-meta">
+      <span>📍 Brussels / London</span>
+      <span>👥 73 employees</span>
+    </div>
+    <div class="card-links">
+      <a href="http://verlinvest.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/verlinvest" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('verlinvest')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- 3i Group -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>3i Group</h3>
+    <span class="card-type">Private Equity / Infrastructure</span>
+  </div>
+  <div class="card-body">
+    <p>FTSE 100-listed international investor focused on mid-market private equity and infrastructure. Leading investment: Action (European discount retailer). Long track record since 1945.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+    </div>
+    <div class="card-links">
+      <a href="https://www.3i.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/3i" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('3i')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- General Atlantic -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>General Atlantic</h3>
+    <span class="card-type">Growth Equity – Global</span>
+  </div>
+  <div class="card-body">
+    <p>Leading global growth equity firm with $100B+ AUM. Invests in technology, consumer, financial services, healthcare, and climate across growth and late stages worldwide.</p>
+    <div class="card-meta">
+      <span>📍 New York / London</span>
+    </div>
+    <div class="card-links">
+      <a href="https://www.generalatlantic.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/general-atlantic" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('ga')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+<!-- Volpi Capital -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Volpi Capital</h3>
+    <span class="card-type">Private Equity – European Tech</span>
+  </div>
+  <div class="card-body">
+    <p>European growth-focused PE firm investing in technology and tech-enabled services businesses. Targets companies with strong recurring revenue and clear value creation opportunities.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+    </div>
+    <div class="card-links">
+      <a href="https://www.volpicapital.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/volpi-capital" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('volpi')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- CALENDAR SECTION -->
+<section id="calendar" class="section">
+
+<div class="day-block">
+<div class="day-header">Wednesday, 03.06.2026</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">12:15<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 13:15</span></div>
+  <div class="meeting-details">
+    <h4>Copilot Capital – John Messer</h4>
+    <div class="location">21 Golden Square, London W1F 9JL</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • John Messer, Helen (Copilot)</div>
+    <div class="directions">🚇 Nearest tube: Piccadilly Circus (Bakerloo/Piccadilly). Walk north on Sherwood Street, turn left into Golden Square. ~4 min walk.</div>
+    <button class="btn-map" onclick="openMap(51.5128, -0.1377, 'Copilot Capital – 21 Golden Square', '4 min walk from Piccadilly Circus station (Bakerloo/Piccadilly lines). Exit towards Sherwood Street, walk north, turn left into Golden Square.')">Show Map</button>
+  </div>
+</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">13:45<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 14:45</span></div>
+  <div class="meeting-details">
+    <h4>Viola Credit – Shane Lyons</h4>
+    <div class="location">18 Conduit Street, London W1S 2XN</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Shane Lyons, Harper Wills, Neha Mittal (Viola)</div>
+    <div class="directions">🚇 Nearest tube: Oxford Circus (Victoria/Bakerloo/Central). Walk south on Regent Street, turn right into Conduit Street. ~4 min walk. From Golden Square: 6 min walk east.</div>
+    <button class="btn-map" onclick="openMap(51.5133, -0.1397, 'Viola Credit – 18 Conduit Street', '4 min walk from Oxford Circus station. Head south on Regent Street, turn right on Conduit Street. Also 6 min walk from Golden Square (previous meeting).')">Show Map</button>
+  </div>
+</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">15:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 16:15</span></div>
+  <div class="meeting-details">
+    <h4>General Atlantic – Marcin Wolf</h4>
+    <div class="location">23 Savile Row, London W1S 2ET</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Marcin Wolf (GA)</div>
+    <div class="directions">🚇 Nearest tube: Oxford Circus or Piccadilly Circus. Walk south along Regent Street, turn left onto Vigo Street, continue to Savile Row. ~5 min. From Conduit Street: 3 min walk south.</div>
+    <button class="btn-map" onclick="openMap(51.5118, -0.1393, 'General Atlantic – 23 Savile Row', '5 min walk from Oxford Circus. Head south on Regent Street, turn left on Vigo Street to Savile Row. Only 3 min from Conduit Street (previous meeting).')">Show Map</button>
+  </div>
+</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">16:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 17:15</span></div>
+  <div class="meeting-details">
+    <h4>MML Capital Partners – Tom Smith</h4>
+    <div class="location">Orion House, 5 Upper St. Martin's Lane, London WC2H 9EA</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Tom Smith, N. Rocke (MML)</div>
+    <div class="directions">🚇 Nearest tube: Leicester Square (Northern/Piccadilly). Exit north, walk up St. Martin's Lane, Orion House is on the left. ~3 min walk. From Savile Row: 12 min walk east via Shaftesbury Avenue.</div>
+    <button class="btn-map" onclick="openMap(51.5130, -0.1268, 'MML Capital – Orion House, Upper St. Martin\'s Lane', '3 min walk from Leicester Square station. Exit north and walk up St. Martin\'s Lane. From Savile Row: 12 min walk via Shaftesbury Avenue.')">Show Map</button>
+  </div>
+</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">17:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 18:30</span></div>
+  <div class="meeting-details">
+    <h4>Corten Capital – Clay Gibson</h4>
+    <div class="location">25 Golden Square, London W1F 9LU</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Clay Gibson, Kate O'Toole (Corten)</div>
+    <div class="directions">🚇 Nearest tube: Piccadilly Circus. Same location as morning meeting at Golden Square. From Upper St. Martin's Lane: 10 min walk west via Shaftesbury Avenue.</div>
+    <button class="btn-map" onclick="openMap(51.5130, -0.1380, 'Corten Capital – 25 Golden Square', 'Same area as the morning Copilot meeting. 4 min from Piccadilly Circus. From Upper St. Martin\'s Lane: 10 min walk west via Shaftesbury Avenue.')">Show Map</button>
+  </div>
+</div>
+</div>
+
+<div class="day-block">
+<div class="day-header">Thursday, 04.06.2026</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">10:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 11:30</span></div>
+  <div class="meeting-details">
+    <h4>3i Group – Jamie Supple</h4>
+    <div class="location">3i, 1 Knightsbridge, London SW1X 7LX – Room 2.3</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Geraldine O'Connell, Jamie Supple (3i)</div>
+    <div class="directions">🚇 Nearest tube: Knightsbridge (Piccadilly line). Exit and the office is directly on Knightsbridge road, adjacent to Hyde Park Corner. ~1 min walk from station exit.</div>
+    <button class="btn-map" onclick="openMap(51.5023, -0.1602, '3i Group – 1 Knightsbridge', '1 min walk from Knightsbridge station (Piccadilly line). The building is directly on Knightsbridge road near Hyde Park Corner.')">Show Map</button>
+  </div>
+</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">13:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 14:00</span></div>
+  <div class="meeting-details">
+    <h4>Battery Ventures – Jessica Zisa, Zakary Ewen</h4>
+    <div class="location">Arthur Stanley House, 40–50 Tottenham Street, London W1T 4RN, Level 7</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Jessica Zisa, Zakary Ewen (Battery)</div>
+    <div class="directions">🚇 Nearest tube: Goodge Street (Northern line). Exit and walk east on Tottenham Street. Building is on the right. ~2 min walk. From Knightsbridge: take Piccadilly line to Leicester Sq, change to Northern line northbound to Goodge Street (~15 min).</div>
+    <button class="btn-map" onclick="openMap(51.5210, -0.1365, 'Battery Ventures – 40-50 Tottenham Street, Level 7', '2 min walk from Goodge Street station (Northern line). Exit and walk east on Tottenham Street. From Knightsbridge: Piccadilly line to Leicester Sq, change Northern line to Goodge St (~15 min).')">Show Map</button>
+  </div>
+</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">14:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 15:15</span></div>
+  <div class="meeting-details">
+    <h4>One Peak Partners – Lukas Rehm, Sophia Malashonok</h4>
+    <div class="location">Fitzroy Place, 8 Mortimer Street, London W1T 3JJ – 7th floor</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Lukas Rehm, Sophia Malashonok (One Peak)</div>
+    <div class="directions">🚇 Nearest tube: Oxford Circus (Victoria/Bakerloo/Central) or Goodge Street (Northern). From Tottenham Street: 5 min walk south on Cleveland Street, turn right onto Mortimer Street.</div>
+    <button class="btn-map" onclick="openMap(51.5178, -0.1393, 'One Peak Partners – 8 Mortimer Street, 7th Floor', '5 min walk from Oxford Circus (south on Great Portland St, left on Mortimer St) or 5 min from Goodge Street. From Battery Ventures on Tottenham St: 5 min walk south.')">Show Map</button>
+  </div>
+</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">16:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 17:30</span></div>
+  <div class="meeting-details">
+    <h4>EMK Capital – Patrik Johnson</h4>
+    <div class="location">11 Hanover Square, London W1S 1JJ – Management Meeting Room</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Patrik Johnson, Toni Martello, Gillian Ashby (EMK)</div>
+    <div class="directions">🚇 Nearest tube: Oxford Circus (Victoria/Bakerloo/Central). Walk south on Regent Street, turn right onto Hanover Street, continue to Hanover Square. ~5 min walk. From Mortimer Street: 8 min walk south.</div>
+    <button class="btn-map" onclick="openMap(51.5138, -0.1430, 'EMK Capital – 11 Hanover Square', '5 min walk from Oxford Circus. South on Regent Street, right onto Hanover Street to Hanover Square. From Mortimer Street (One Peak): 8 min walk south.')">Show Map</button>
+  </div>
+</div>
+</div>
+
+<div class="day-block">
+<div class="day-header">Friday, 05.06.2026</div>
+
+<div class="meeting-card">
+  <div class="meeting-time">12:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 13:30</span></div>
+  <div class="meeting-details">
+    <h4>Volpi Capital – Marco Sodi, Zorro</h4>
+    <div class="location">Volpi Capital, 1 Hoopers Court, London SW3 1AF</div>
+    <div class="attendees">Tõnis Kons, Sebastian Moss, Kamil Moczulski • Marco Sodi, Zorro (Volpi)</div>
+    <div class="directions">🚇 Nearest tube: South Kensington (District/Circle/Piccadilly). Walk east along Pelham Street, turn right into Sydney Close / Hoopers Court area. ~8 min walk. Alternatively: Sloane Square (District/Circle), walk north. ~10 min.</div>
+    <button class="btn-map" onclick="openMap(51.4935, -0.1685, 'Volpi Capital – 1 Hoopers Court', '8 min walk from South Kensington station (District/Circle/Piccadilly lines). Walk east along Pelham Street towards Sloane Avenue area. Alternatively: 10 min from Sloane Square station.')">Show Map</button>
+  </div>
+</div>
+</div>
+
+</section>
+</main>
+
+<!-- Map Modal -->
+<div class="map-overlay" id="mapOverlay">
+  <div class="map-container">
+    <div class="map-header">
+      <h4 id="mapTitle"></h4>
+      <button class="map-close" onclick="closeMap()">×</button>
+    </div>
+    <div id="map"></div>
+    <div class="map-directions" id="mapDirections"></div>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="profile-overlay" id="profileOverlay" onclick="if(event.target===this)closeProfile()">
+  <div class="profile-container">
+    <div class="profile-header">
+      <h3 id="profileTitle"></h3>
+      <button class="profile-close" onclick="closeProfile()">×</button>
+    </div>
+    <div class="profile-body" id="profileBody"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  © Pandion Partners 2026 · TMT Roadshow London · www.pandionpartners.com
+</footer>
+
+<script>
+// Navigation
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Map
+let map = null;
+function openMap(lat, lng, title, directions) {
+  document.getElementById('mapOverlay').classList.add('active');
+  document.getElementById('mapTitle').textContent = title;
+  document.getElementById('mapDirections').textContent = directions;
+  setTimeout(() => {
+    if (map) { map.remove(); }
+    map = L.map('map').setView([lat, lng], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map).bindPopup(title).openPopup();
+  }, 100);
+}
+function closeMap() {
+  document.getElementById('mapOverlay').classList.remove('active');
+  if (map) { map.remove(); map = null; }
+}
+
+// Profiles
+const profiles = {
+  mml: {
+    title: 'MML Capital Partners',
+    html: `<h4>Overview</h4><p>UK-headquartered international private equity firm (est. ~2003). Offices in London, Paris, New York, and Dublin. ~90 employees.</p>
+    <h4>Investment Strategy</h4>
+    <ul><li><strong>Partnership Capital:</strong> B2B companies in UK/US/Europe, £10m+ EBITDA. Tickets: £40m–£120m</li>
+    <li><strong>Enterprise Capital:</strong> B2B in UK/Europe, £2m+ EBITDA. Tickets: £10m–£40m</li>
+    <li><strong>Keystone:</strong> Infrastructure PE (Fund I closed at €935m, Dec 2025)</li>
+    <li><strong>Ireland Growth Capital:</strong> B2B Ireland/NI, €2m+ EBITDA. Tickets: €5m–€30m</li></ul>
+    <h4>Sectors</h4><p>Business Services, Circular Economy, Digitalisation, Education, Financial Services, Healthcare, Industrial Services, Industrials, Infrastructure, TMT</p>
+    <h4>Recent Activity</h4><p>Feb 2026: Exited StoneTurn. Jan 2026: RTM Engineering minority investment. Jan 2026: €300m GPS Group refinancing. Keystone I closed at €935m (Dec 2025). Continuation fund (MML Dorchester) closed at €630m+ (Dec 2025).</p>`
+  },
+  tmt: {
+    title: 'TMT Investments PLC',
+    html: `<h4>Overview</h4><p>AIM-listed (LON:TMT) investment company, Jersey-domiciled. Market cap ~$68m. ~21 employees.</p>
+    <h4>Investment Strategy</h4><p>VC/PE in Technology, Media & Telecommunications. Min. investment: $250K per deal. Hold period: 2–6 years. Exits via trade sales, IPO, or secondaries.</p>
+    <h4>Sub-sectors</h4><p>Big Data/Cloud, E-Commerce, EdTech, Fintech, Healthtech, Mobility, SaaS</p>
+    <h4>Portfolio Highlights</h4><p>Fintech: 3S Money, Estateguru, VertoFX. SaaS: Pandadoc, Workiz, Synder. EdTech: Novakid, Praktika.ai. Healthtech: Forta, MedVidi, Collectly. Notable exit: Pipedrive.</p>`
+  },
+  clp: {
+    title: 'Columbia Lake Partners',
+    html: `<h4>Overview</h4><p>London-based venture debt firm established in 2014. ~19 employees. ~$300m financing capacity.</p>
+    <h4>Investment Strategy</h4><p>Venture debt and growth loans to European tech companies. Instruments: term debt, MRR lines, lines of credit. "Light touch" – no board seats, light covenants. Typical deal: €2–20m (avg ~$8m).</p>
+    <h4>Sectors</h4><p>B2B Software, Fintech, AI & Deep Tech, E-commerce, Proptech</p>
+    <h4>Portfolio</h4><p>75–100 companies financed. Notable: Catawiki, Mews, Scoro, Shapr3D, Zoovu, Contentsquare, Factorial, Amplience. Supported Egress (acquired by KnowBe4) and Griffin (Banking-as-a-Service).</p>`
+  },
+  onepeak: {
+    title: 'One Peak Partners',
+    html: `<h4>Overview</h4><p>London-based growth equity firm, founded 2014. ~47 employees. $4B+ AUM.</p>
+    <h4>Investment Strategy</h4><p>High-growth, category-defining B2B software scale-ups. Minority or majority stakes. "Founder-first" approach with proprietary PULSE platform. Typical cheque: $20–100m.</p>
+    <h4>Sectors</h4><p>Enterprise software, SaaS, cybersecurity, DevOps, healthcare tech, BI, ESG</p>
+    <h4>Geography</h4><p>Europe, Israel, selective US</p>
+    <h4>Portfolio Highlights</h4><p>Datarails (AI FP&A), Hawk AI (AML/fraud), Iplicit (cloud accounting), Sparta Commodities, Akur8 (AI actuarial), Coro Cybersecurity, Neo4j, PandaDoc, Deepki (ESG data). Recent exit: Brightflag → Wolters Kluwer (2025).</p>`
+  },
+  felix: {
+    title: 'Felix Capital',
+    html: `<h4>Overview</h4><p>London-based VC firm, founded 2015. ~58 employees. $1.2B+ AUM across four funds.</p>
+    <h4>Investment Strategy</h4><p>"VC for the Creative Class." Intersection of technology and creativity. Early-stage: $1–20m. Growth: up to $50m. Fund IV: $600m (closed 2022).</p>
+    <h4>Sectors</h4><p>B2B: SaaS, AI. B2C: Digital lifestyle, consumer platforms. Broader: Web3, healthcare, fintech, media, commerce, climate.</p>
+    <h4>Portfolio Highlights</h4><p>Deliveroo (IPO'd), Moonpig, Moonbug (acquired by Candle Media), Oatly, Peloton, Mirakl, Papier, YFood, Unmind.</p>`
+  },
+  atomico: {
+    title: 'Atomico',
+    html: `<h4>Overview</h4><p>London-headquartered VC founded 2006 by Skype co-founder Niklas Zennström. ~132 employees. Fund VII: $1.24B (Sept 2024). ~$4.5B total AUM.</p>
+    <h4>Investment Strategy</h4><p>European-founded tech companies exclusively. Seed through pre-IPO. Cheques: $10–50m. Venture team: Series A. Growth team: Series B to pre-IPO.</p>
+    <h4>Sectors</h4><p>AI, fintech, enterprise software, digital infrastructure, industrial automation, mobility, healthcare, sustainability (Planet Positive).</p>
+    <h4>Portfolio</h4><p>155+ companies. Notable: Klarna, Stripe, Supercell, DeepL, Hinge Health, Pipedrive, Aiven, Lilium, Jobandtalent. 62 exits including Skype, Supercell, Wolt. Anticipated IPOs: Stripe, Klarna.</p>`
+  },
+  battery: {
+    title: 'Battery Ventures',
+    html: `<h4>Overview</h4><p>US-headquartered global tech firm, founded 1983. ~229 employees. Fund XV: $3.25B. $16B+ raised since inception. 450+ companies invested.</p>
+    <h4>Investment Strategy</h4><p>Technology at all stages: early, growth, and buyout. Six offices: Boston, SF, Menlo Park, Tel Aviv, London, NYC.</p>
+    <h4>Sectors</h4><p>Application Software, Infrastructure Software, Consumer, Industrial Tech & Life Science Tools.</p>
+    <h4>Recent Deals (2025)</h4><p>1mind (AI sales agents), Aalyria Technologies (satellite networks), Baseten (AI infrastructure), ClickHouse (analytics DB, 456 emp), Descartes Underwriting (parametric insurance), Function Health (preventative health, 419 emp).</p>`
+  },
+  stepstone: {
+    title: 'StepStone Group',
+    html: `<h4>Overview</h4><p>US-headquartered global private markets firm. ~1,393 employees. $179B AUM. Publicly traded.</p>
+    <h4>Investment Strategy</h4><p>Multi-asset class: PE, private debt, real estate, infrastructure, VC. Strategies: primaries, secondaries, co-investments, direct investments. Global scope.</p>
+    <h4>Recent Funds</h4><p>VC Global Partners XII: $834m (May 2026). Credit Opportunities Fund II: $1.6B (March 2026). PE Strategies Fund: $750m (Nov 2025). Real Estate Partners V: $3.8B (April 2025).</p>
+    <h4>Recent Deals</h4><p>Vitalia (Spain, $1.76B, care homes). Silent Push ($10m, threat intel). A&O Hotels ($884m). Zepto (India, $200m, quick commerce).</p>`
+  },
+  emk: {
+    title: 'EMK Capital',
+    html: `<h4>Overview</h4><p>UK-headquartered global mid-market PE firm. ~102 employees. €7B+ AUM.</p>
+    <h4>Investment Strategy</h4><p>Buy-and-build in the mid-market. "EMK Way": deep sub-sector research, operational transformation. Average 5x EBITDA growth across 25 exits.</p>
+    <h4>Funds</h4><p>Fund I (2017): €680m. Fund II (2020): €1.5B. Fund III (2023): €3.0B (hard cap).</p>
+    <h4>Sectors</h4><p>Business Services, IT Services, Healthcare, Industrials, Technology, Education, Consumer, Renewables.</p>
+    <h4>Portfolio</h4><p>Reconomy (waste BPO), Bright Data (proxy network), The Digital Neighborhood (IT services), Cardo (wireless comms), Roundtable Interactive (video games), Williams Advanced Engineering. Recent: Project Informatica (Brazil, IT/cyber), Aureos Energy ($184m rev), March Group ($253m rev, MEP engineering).</p>`
+  },
+  farview: {
+    title: 'Farview Equity Partners',
+    html: `<h4>Overview</h4><p>London-based PE firm. ~15 employees. Thesis-led investor in European enterprise tech.</p>
+    <h4>Investment Strategy</h4><p>Growth-stage enterprise technology with product-market fit. Flexible: primary/secondary, minority/control. €15–50m equity per investment.</p>
+    <h4>Sectors</h4><p>SaaS, business/information services, fintech.</p>
+    <h4>Current Portfolio</h4><p>Amplience ($24m rev, headless CMS), Evora Global ($21m rev, ESG for real estate), Exclaimer ($74m rev, email signatures), Grantify ($14m rev, AI grants), Unily Group ($73m rev, employee experience).</p>
+    <h4>Past Exits</h4><p>Merchant services → SaltPay. Contact centre → Vonage/Ericsson. Online brokerage → IG Group. Distribution → Syniverse. Music services → EQT. Spotify (public).</p>`
+  },
+  ventiga: {
+    title: 'Ventiga Capital',
+    html: `<h4>Overview</h4><p>London-based PE firm, founded 2015. ~5 employees. €200m+ in funds.</p>
+    <h4>Investment Strategy</h4><p>Profitable B2B services in software, data, analytics. Control/joint-control positions. "Thematic": recurring revenue, favourable margins. €20–60m per investment.</p>
+    <h4>Geography</h4><p>Nordics, UK & Ireland, DACH.</p>
+    <h4>Portfolio</h4><p>Omnevo (Germany, airline e-commerce). Skymetrix (Germany, airline fuel procurement). Retail Insight (UK, retail analytics, $17m rev). Thesis Asset Management (UK, $114m rev). Nordic Service Partners (Sweden, KFC/BK franchisee).</p>
+    <h4>Exits</h4><p>Infare Solutions (Denmark, airline pricing data) – exited July 2023.</p>`
+  },
+  px3: {
+    title: 'PX3 Partners',
+    html: `<h4>Overview</h4><p>London-based pan-European PE firm. ~15 employees. €1.1B AUM (inaugural fundraise, May 2025). Fund I: €500m (hard cap).</p>
+    <h4>Investment Strategy</h4><p>Thematic: "Re-invent living, Net citizenship, Planet first, Social transformation, Compete smarter." "Connected Acceleration" value creation: international expansion.</p>
+    <h4>Sectors</h4><p>Business Services, Consumer & Leisure, Industrials.</p>
+    <h4>Portfolio</h4><p>BV TECH (Italy, ICT/cyber, $193m rev, 980 emp, 2025). Com Laude / Nom-IQ (UK, domain management, 2024). Cofimco (Italy, industrial cooling, $80m deal, 2023). Cleanova (UK, industrial filtration, $1.3B combined EV after M&A, 2023).</p>`
+  },
+  corten: {
+    title: 'Corten Capital',
+    html: `<h4>Overview</h4><p>London-based PE firm, founded 2019. ~28 employees. At least two funds (2021, 2024).</p>
+    <h4>Investment Strategy</h4><p>B2B software, tech-enabled services, information services. High-conviction, concentrated portfolio. "Investor-operator" model: industry executives + investment professionals.</p>
+    <h4>Geography</h4><p>Europe and North America.</p>
+    <h4>Portfolio</h4><p>Cobuilder (Norway, construction data SaaS, $8m rev, 2024). Efecte/Matrix42 (Germany, ITSM software, $27m rev, 632 emp, 2024). Roima Intelligence (Finland, supply chain software, $40m rev, 2024). Ekco Cloud (Ireland, cloud/cyber, $322m deal, 2022). Matrix42 (ITSM/endpoint, 2021).</p>`
+  },
+  ashgrove: {
+    title: 'Ashgrove Capital',
+    html: `<h4>Overview</h4><p>London-based independent pan-European credit manager, founded 2019. ~30 employees. Fund II: €650m hard cap (Nov 2024).</p>
+    <h4>Investment Strategy</h4><p>Senior secured, non-dilutive credit to mid-market B2B software and services. Instruments: unitranche, growth capital, asset-backed lending, structured credit. €10–50m initial investments.</p>
+    <h4>Geography</h4><p>Europe (recently opened Nordic hub in Copenhagen).</p>
+    <h4>Recent Deals</h4><p>Smartvatten (€26m, Oct 2025). Xtremepush (growth facility, Oct 2025). Amplience (£32m, Jan 2025). Dealfront (€30m, Nov 2024). Position Green (SEK 150m, Sept 2024). Hanzo Archives ($14m, Aug 2024). Xempus AG (€21m, July 2024).</p>`
+  },
+  copilot: {
+    title: 'Copilot Capital',
+    html: `<h4>Overview</h4><p>London-based PE firm, founded 2023. ~11 employees. $200m from The Friedkin Group (June 2024).</p>
+    <h4>Investment Strategy</h4><p>European B2B software growth equity. Target: €5–15m ARR scaling to €50m+. "Human-centred" approach: sales acceleration, internationalisation, M&A, AI. Position as "risk takers" partnering with founders.</p>
+    <h4>Portfolio</h4><p>Relesys (Denmark, $53m deal, workforce engagement SaaS). PriceShape (Denmark, pricing intelligence). SecureFlag (UK, secure coding training). Zendr (Sweden, $17m rev, digital logistics).</p>
+    <h4>Notable</h4><p>First deal (May 2024): take-private of Relesys from Nasdaq Copenhagen First North.</p>`
+  },
+  bregal: {
+    title: 'Bregal Investments',
+    html: `<h4>Overview</h4><p>UK-headquartered international PE firm. ~343 employees. €19B+ AUM. Five direct investment teams + fund-of-funds.</p>
+    <h4>Strategies</h4>
+    <ul><li><strong>Bregal Sagemount:</strong> US high-growth sectors ($7.5B raised)</li>
+    <li><strong>Bregal Unternehmerkapital (BU):</strong> DACH mid-market (€7.0B+)</li>
+    <li><strong>Bregal Milestone:</strong> European software (€1.3B)</li>
+    <li><strong>Bregal Sphere:</strong> Climate/nature solutions</li>
+    <li><strong>Bregal Partners:</strong> Consumer, multi-unit, F&B, business services ($1.25B)</li></ul>
+    <h4>Recent Activity (2025–26)</h4><p>Harbor Compliance (US), PDQ.com (US, endpoint mgmt), Copperfasten Technologies (Ireland, cybersecurity), Skysparc AB (Sweden, treasury software), meteoviva, CoreGo.</p>`
+  },
+  viola: {
+    title: 'Viola Credit',
+    html: `<h4>Overview</h4><p>Israel-based alternative credit manager, part of Viola Group. ~67 employees. $4B+ AUM.</p>
+    <h4>Investment Strategy</h4>
+    <ul><li><strong>Growth Lending:</strong> $5–50m to sponsor-backed tech companies (growth, M&A, working capital)</li>
+    <li><strong>Asset-Backed Lending:</strong> $10–300m to fintech/proptech/insurtech originators</li></ul>
+    <h4>Geography</h4><p>US, UK, Western Europe, Nordics, Israel, Australia, NZ.</p>
+    <h4>Fund Activity</h4><p>ABL Fund III: $2B (Oct 2025, oversubscribed). $500m JV with Cadma Capital / Apollo (Sept 2024). €300m European tech growth lending fund.</p>
+    <h4>Portfolio</h4><p>Lendbuzz (car loans), Payzen (hospital payments), Obligo (rental solutions).</p>`
+  },
+  verlinvest: {
+    title: 'Verlinvest',
+    html: `<h4>Overview</h4><p>Belgium-based family-backed evergreen investment firm, est. 1995. ~73 employees. ~$2B AUM.</p>
+    <h4>Investment Strategy</h4><p>Evergreen capital (no fixed fund life). Purpose-driven entrepreneurs building global consumer brands. €20–200m per transaction. Active shareholder: strategic advisory, international expansion.</p>
+    <h4>Sectors</h4><p>Food/Beverage/FMCG, Health, Consumer Tech, Leisure/Lifestyle.</p>
+    <h4>Portfolio Highlights</h4><p>Insomnia Cookies (US, $350m, 1,911 emp). Oatly. Tony's Chocolonely. Vita Coco. Eye Foundation (India, $100m). Bludental Clinique (Italy). The Climbing Hangar (UK). Chewy. Who Gives A Crap.</p>`
+  },
+  '3i': {
+    title: '3i Group',
+    html: `<h4>Overview</h4><p>FTSE 100-listed international investor (est. 1945). Headquartered at 1 Knightsbridge, London.</p>
+    <h4>Investment Strategy</h4><p>Mid-market Private Equity and Infrastructure. Known for long-hold, value creation approach. Flagship investment: Action (European discount retailer).</p>
+    <h4>Key Facts</h4><p>One of Europe's most established PE firms. Focuses on Northern European mid-market (typically €100–500m EV). Sectors: consumer, business services, healthcare, industrials. Infrastructure arm targets core-plus assets in European utilities, transport, and communications.</p>`
+  },
+  ga: {
+    title: 'General Atlantic',
+    html: `<h4>Overview</h4><p>Leading global growth equity firm with $100B+ AUM. Founded 1980. Offices worldwide including 23 Savile Row, London.</p>
+    <h4>Investment Strategy</h4><p>Growth and late-stage investments across technology, consumer, financial services, healthcare, and climate. Cheques typically $50m–$500m+. Partners with innovative, high-growth companies from expansion to pre-IPO.</p>
+    <h4>Notable Investments</h4><p>Airbnb, Alibaba, ByteDance, Facebook, Slack, Snapchat, Uber (historic). Current: Stripe, Databricks, and many European tech scale-ups.</p>`
+  },
+  volpi: {
+    title: 'Volpi Capital',
+    html: `<h4>Overview</h4><p>European growth-focused private equity firm based in London (1 Hoopers Court, SW3).</p>
+    <h4>Investment Strategy</h4><p>Technology and tech-enabled services businesses. Targets companies with strong recurring revenue, clear market leadership, and potential for operational and strategic value creation. Mid-market focus in European technology sector.</p>
+    <h4>Approach</h4><p>Partners with management teams to accelerate growth through internationalisation, product development, and selective M&A.</p>`
+  }
+};
+
+function showProfile(id) {
+  const p = profiles[id];
+  if (!p) return;
+  document.getElementById('profileTitle').textContent = p.title;
+  document.getElementById('profileBody').innerHTML = p.html;
+  document.getElementById('profileOverlay').classList.add('active');
+  event.preventDefault();
+}
+function closeProfile() {
+  document.getElementById('profileOverlay').classList.remove('active');
+}
+
+// Close modals on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeMap(); closeProfile(); }
+});
+</script>
+</body>
+</html>
