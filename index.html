@@ -45,11 +45,17 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
   align-items: center;
   gap: 1rem;
 }
+.header-brand img.logo {
+  height: 44px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
 .header-brand h1 {
   color: var(--white);
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  display: none;
 }
 .header-brand .subtitle {
   font-size: 0.7rem;
@@ -57,6 +63,7 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
   text-transform: uppercase;
   opacity: 0.8;
   font-family: 'Inter', sans-serif;
+  display: none;
 }
 .header-event {
   text-align: right;
@@ -316,9 +323,8 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
   background: var(--pandion-blue);
   color: var(--white);
   text-align: center;
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   font-size: 0.8rem;
-  opacity: 0.9;
   margin-top: 3rem;
 }
 
@@ -335,10 +341,7 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
 
 <header class="header">
   <div class="header-brand">
-    <div>
-      <h1>PandionPartners</h1>
-      <div class="subtitle">International Mergers &amp; Acquisitions</div>
-    </div>
+    <img src="logo.png" alt="Pandion Partners – International Mergers &amp; Acquisitions" class="logo">
   </div>
   <div class="header-event">
     <strong>TMT Roadshow London 2026</strong><br>
@@ -929,6 +932,7 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
 </div>
 
 <footer class="footer">
+  <img src="logo.png" alt="Pandion Partners" style="height:32px;width:auto;margin-bottom:0.75rem;display:block;margin-left:auto;margin-right:auto;"><br>
   © Pandion Partners 2026 · TMT Roadshow London · www.pandionpartners.com
 </footer>
 
