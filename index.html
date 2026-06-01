@@ -823,6 +823,26 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
   </div>
 </div>
 
+
+<!-- Tenzing -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Tenzing</h3>
+    <span class="card-type">Private Equity – Consumer</span>
+  </div>
+  <div class="card-body">
+    <p>London-based PE firm focused on consumer businesses. Partners with ambitious management teams to build market-leading consumer companies across Europe.</p>
+    <div class="card-meta">
+      <span>📍 London, UK</span>
+    </div>
+    <div class="card-links">
+      <a href="https://tenzing.pe/" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/tenzing-private-equity" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('tenzing')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
 <!-- Volpi Capital -->
 <div class="company-card">
   <div class="card-header">
@@ -973,8 +993,11 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
   <div class="meeting-time" data-utc-start="2026-06-03T17:00:00Z" data-utc-end="2026-06-03T18:00:00Z">19:00<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 20:00</span></div>
   <div class="meeting-details">
     <h4>Tenzing</h4>
-    <div class="location">TBC</div>
-    <div class="attendees">Details to be confirmed</div>
+    <a href="#" onclick="showProfile('tenzing');return false" class="link-profile" style="font-size:0.8rem;margin-bottom:0.3rem;display:inline-block">View Company Profile</a>
+    <div class="location">Heddon House, 149–151 Regent Street, London W1B 4JD</div>
+    <div class="attendees">Pandion Partners team</div>
+    <div class="directions">🚇 Nearest tube: Piccadilly Circus (Bakerloo/Piccadilly). Exit north onto Regent Street, Heddon House is on the right after ~2 min. From Golden Square (Corten): 5 min walk east.</div>
+    <button class="btn-map" onclick="openMap(51.5117, -0.1385, 'Tenzing – Heddon House, 149–151 Regent Street', '2 min walk from Piccadilly Circus station. Exit north onto Regent Street. Heddon House is on the right. From Golden Square (Corten meeting): 5 min walk east.')">Show Map</button>
   </div>
 </div>
 </div>
@@ -1600,6 +1623,12 @@ const profiles = {
     html: `<h4>Overview</h4><p>Leading global growth equity firm, $100B+ AUM. Founded 1980. London office: 23 Savile Row.</p>
     <h4>Investment Strategy</h4><p>Growth and late-stage across technology, consumer, financial services, healthcare, climate. Cheques typically $50M–$500M+.</p>
     <h4>Notable Investments</h4><p>Historic: Airbnb, Alibaba, ByteDance, Facebook, Slack, Uber. Current: Stripe, Databricks, many European tech scale-ups.</p>`
+  },
+  tenzing: {
+    title: 'Tenzing',
+    html: `<h4>Overview</h4><p>London-headquartered private equity firm focused on consumer businesses. HQ: Heddon House, 149–151 Regent Street, London W1B 4JD.</p>
+    <h4>Investment Strategy</h4><p>Partners with ambitious management teams to build market-leading consumer companies. Focuses on buy-and-build strategies in the European consumer sector, backing founders and operators to scale domestically and internationally.</p>
+    <h4>Website</h4><p><a href="https://tenzing.pe/" target="_blank">tenzing.pe</a></p>`
   },
   volpi: {
     title: 'Volpi Capital',
