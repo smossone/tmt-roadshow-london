@@ -824,6 +824,27 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
 </div>
 
 
+
+<!-- Francisco Partners -->
+<div class="company-card">
+  <div class="card-header">
+    <h3>Francisco Partners</h3>
+    <span class="card-type">Private Equity – Technology</span>
+  </div>
+  <div class="card-body">
+    <p>Leading global technology-focused PE firm. ~$45B AUM. Invests across buyouts, growth equity, and credit in technology companies. 400+ investments since 1999. Fund VII: $13.5B. London office: The Peak, 5 Wilton Road.</p>
+    <div class="card-meta">
+      <span>📍 San Francisco / London</span>
+      <span>👥 300+ employees</span>
+    </div>
+    <div class="card-links">
+      <a href="https://www.franciscopartners.com" target="_blank" class="link-website">Website</a>
+      <a href="https://www.linkedin.com/company/francisco-partners" target="_blank" class="link-linkedin">LinkedIn</a>
+      <a href="#" onclick="showProfile('fp')" class="link-profile">Company Profile</a>
+    </div>
+  </div>
+</div>
+
 <!-- Tenzing -->
 <div class="company-card">
   <div class="card-header">
@@ -1056,6 +1077,18 @@ h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--pandion-blue); }
 
 <div class="day-block">
 <div class="day-header">Friday, 05.06.2026</div>
+
+<div class="meeting-card">
+  <div class="meeting-time" data-utc-start="2026-06-05T08:30:00Z" data-utc-end="2026-06-05T09:00:00Z">10:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 11:00</span></div>
+  <div class="meeting-details">
+    <h4>Francisco Partners – Matthias Niederreiter</h4>
+    <a href="#" onclick="showProfile('fp');return false" class="link-profile" style="font-size:0.8rem;margin-bottom:0.3rem;display:inline-block">View Company Profile</a>
+    <div class="location">The Peak, 5 Wilton Road, Level 2, London SW1V 1AN</div>
+    <div class="attendees">Pandion Partners team • Matthias Niederreiter (Francisco Partners)</div>
+    <div class="directions">🚇 Nearest tube: Victoria (Victoria/District/Circle). Exit south, The Peak is on Wilton Road directly opposite the station. ~1 min walk.</div>
+    <button class="btn-map" onclick="openMap(51.4965, -0.1438, 'Francisco Partners – The Peak, 5 Wilton Road', '1 min walk from Victoria station. Exit the station southward onto Wilton Road. The Peak is immediately on your left.')">Show Map</button>
+  </div>
+</div>
 
 <div class="meeting-card">
   <div class="meeting-time" data-utc-start="2026-06-05T10:30:00Z" data-utc-end="2026-06-05T11:30:00Z">12:30<br><span style="font-size:0.75rem;font-weight:400;color:#777">– 13:30</span></div>
@@ -1623,6 +1656,20 @@ const profiles = {
     html: `<h4>Overview</h4><p>Leading global growth equity firm, $100B+ AUM. Founded 1980. London office: 23 Savile Row.</p>
     <h4>Investment Strategy</h4><p>Growth and late-stage across technology, consumer, financial services, healthcare, climate. Cheques typically $50M–$500M+.</p>
     <h4>Notable Investments</h4><p>Historic: Airbnb, Alibaba, ByteDance, Facebook, Slack, Uber. Current: Stripe, Databricks, many European tech scale-ups.</p>`
+  },
+  fp: {
+    title: 'Francisco Partners',
+    html: `<h4>Overview</h4><p>Leading global technology-focused private equity firm, founded 1999 in San Francisco. ~$45B AUM. 400+ technology investments since inception. Offices: San Francisco, New York, London, Singapore. London: The Peak, 5 Wilton Road, SW1V 1AN.</p>
+    <h4>Investment Strategy</h4><p>Specialises exclusively in technology and tech-enabled businesses. Three strategies: Buyout (Fund VII: $13.5B), Agility/growth (Fund III: $3.3B), and Credit. Invests across all stages and sizes within technology, from growth equity to large-cap buyouts.</p>
+    <h4>Sectors</h4><p>Cybersecurity (13 acquisitions), Healthcare IT (13 acquisitions), IT Operations, Enterprise Software, Fintech, Data/Analytics, Communications.</p>
+    <h4>Recent Deal History</h4>
+    <table style="width:100%;font-size:0.85rem;border-collapse:collapse;margin:0.5rem 0"><tr style="background:#E8EDF5"><th style="text-align:left;padding:4px">Year</th><th style="text-align:left;padding:4px">Target</th><th style="text-align:left;padding:4px">Description</th></tr>
+    <tr><td style="padding:4px">Apr 2026</td><td>Blackline Safety</td><td>Cloud-connected safety / gas detection</td></tr>
+    <tr><td style="padding:4px">Dec 2025</td><td>Clearwater Analytics</td><td>$8.4B deal (with Permira/Warburg Pincus)</td></tr>
+    <tr><td style="padding:4px">Nov 2025</td><td>OEConnection</td><td>Majority stake (from Genstar Capital)</td></tr>
+    <tr><td style="padding:4px">Oct 2025</td><td>Jamf</td><td>$2.2B take-private, Apple device management</td></tr></table>
+    <h4>Portfolio (104 companies)</h4><p>Notable current/recent holdings include Jamf, SonicWall, Lightspeed, Forcepoint, MyHeritage (exploring ~$1B sale), GoodRx, LogMeIn, Blancco Technology, and many others across cybersecurity, healthcare IT, and enterprise software.</p>
+    <h4>Fund Activity</h4><p>Fund VII (2022): $13.5B. Agility III (2022): $3.3B. Combined $17B raise with 160+ institutional investors from 30 countries. Active 2026 dealmaking outlook.</p>`
   },
   tenzing: {
     title: 'Tenzing',
